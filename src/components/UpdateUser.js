@@ -1,21 +1,40 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { updateUser } from "../redux/UserReducer";
 
 const UpdateUser = () => {
-  const { id } = useParams(); // To get the Id of the user in the url and updateuser page
+  const { id } = useParams(); // To get the Id (String) of the user in the url and updateuser page
+  // const ids = +id; //Converting String to Number
   const users = useSelector((state) => state.users); //To get all the users
-  const existingUser = users.filter((user) => user.id == id);
+  const existingUser = users.filter((user) => user.id === +id);
   const { name, email, domain } = existingUser[0];
   const [newName, setNewName] = useState(name);
   const [newEmail, setNewEmail] = useState(email);
   const [newDomain, setNewDomain] = useState(domain);
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleUpdate = (event) => {
+    event.preventDefault();
+
+    dispatch(
+      updateUser({
+        id: id,
+        name: newName,
+        email: newEmail,
+        domain: newDomain,
+      })
+    );
+    navigate("/");
+  };
+
   return (
     <div className="d-flex w-100 vh-100  justify-content-center align-items-center">
       <div className="w-50 border bg-light p-3">
         <h4 className="text-center my-3 text-info">Edit User Information</h4>
-        <form>
+        <form onSubmit={handleUpdate}>
           <div>
             <label htmlFor="name">Name</label>
             <input
